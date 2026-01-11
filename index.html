@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>ONESMUS SITE</title>
+  <style>
+    body {
+      background-color: #071d36;
+      color: white;
+      font-family: Arial, sans-serif;
+      padding: 0;
+      margin: 0;
+    }
+    header {
+      background-color: #14365b;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 20px;
+    }
+    header img {
+      height: 50px;
+      border-radius: 10px;
+    }
+    header .menu {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+    header button {
+      padding: 8px 15px;
+      background-color: #ff4444;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .container {
+      padding: 20px;
+    }
+    h1 {
+      text-align: center;
+      margin-top: 10px;
+    }
+    .time, .viewer-count {
+      text-align: right;
+      font-size: 0.9em;
+      margin: 5px 20px;
+    }
+    .login, .admin-post, .post, .comment-box, .edit-post-box {
+      background-color: #29487d;
+      padding: 15px;
+      margin: 20px auto;
+      border-radius: 10px;
+      width: 90%;
+      max-width: 700px;
+    }
+    input, textarea, button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      border: none;
+      border-radius: 5px;
+    }
+    .reactions button {
+      width: auto;
+      margin: 5px 5px 5px 0;
+    }
+    .post img {
+      max-width: 100%;
+      margin-top: 10px;
+      border-radius: 10px;
+    }
+    .download-btn, .edit-btn, .delete-btn, .save-edit-btn, .cancel-edit-btn {
+      background-color: #4caf50;
+      color: white;
+      margin-top: 10px;
+      margin-right: 5px;
+      padding: 8px 12px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .delete-btn {
+      background-color: #f44336;
+    }
+    .edit-btn {
+      background-color: #00aaff;
+    }
+    .save-edit-btn {
+      background-color: #008cba;
+    }
+    .cancel-edit-btn {
+      background-color: #bbb;
+      color: black;
+    }
+    .comment-box textarea {
+      width: 100%;
+    }
+    .comment-box button {
+      background-color: #00aaff;
+      color: white;
+    }
+    .timestamp {
+      font-size: 0.8em;
+      color: #ddd;
+      margin-top: 5px;
+    }
+    .comment-time {
+      font-size: 0.75em;
+      color: #ccc;
+      margin-left: 10px;
+    }
+    .admin-actions {
+      margin-top: 10px;
+    }
+    .admin-actions button {
+      margin-right: 5px;
+    }
+    .edit-post-box textarea {
+      width: 100%;
+      min-height: 100px;
+    }
+    .edit-post-box input[type="file"] {
+      margin-top: 5px;
+    }
+    .edit-post-box img {
+      max-width: 100%;
+      margin-top: 10px;
+      border-radius: 10px;
+    }
+    .hidden {
+      display: none !important;
+    }
+  </style>
+</head>
+<body onload="incrementViewers(); loadPosts();">
+
+  <header>
+    <img src="logo.jpg" alt="Site Logo">
+    <div class="menu">
+      <span id="viewerCount" class="viewer-count">Viewers: 0</span>
+      <button onclick="logout()">Logout</button>
+    </div>
+  </header>
+
+  <div class="time" id="time"></div>
+
+  <div class="container">
+    <h1>ONESMUS SITE</h1>
+
+    <div class="login" id="loginBox">
+      <h2>Admin Login</h2>
+      <input type="text" id="username" placeholder="Username">
+      <input type="password" id="password" placeholder="Password">
+      <button onclick="login()">Login</button>
+    </div>
+
+    <div class="admin-post" id="adminPost" style="display: none;">
+      <h2>Post New Update</h2>
+      <textarea id="postContent" placeholder="Write your post here..."></textarea>
+      <input type="file" id="imageInput" accept="image/*">
+      <img id="previewImage" style="display:none; margin-top:10px; max-width:100%;">
+      <button onclick="publishPost()">Publish</button>
+    </div>
+
+    <div id="postsContainer"></div>
+
+    <div class="edit-post-box hidden" id="editPostBox">
+      <h2>Edit Post</h2>
+      <textarea id="editPostContent"></textarea>
+      <img id="editPreviewImage" style="display:none; margin-top:10px; max-width:100%;">
+      <input type="file" id="editImageInput" accept="image/*">
+      <div class="edit-actions">
+        <button class="save-edit-btn" onclick="saveEditedPost()">Save</button>
+        <button class="cancel-edit-btn" onclick="cancelEdit()">Cancel</button>
+      </div>
+      <input type="hidden" id="currentPostId">
+      <input type="hidden" id="originalImageUrl">
+    </div>
+  </div>
+
+  <script>
+    let posts = JSON.parse(localStorage.getItem("posts")) || [];
+    let currentEditPost = null;
+
+    // Auto-updating time
+    setInterval(() => {
+      const now = new Date();
+      document.getElementById("time").textContent = now.toLocaleString();
+    }, 1000);
+
+    // Viewer counter
+    function incrementViewers() {
+      let count = localStorage.getItem("viewers") || 0;
+      count++;
+      localStorage.setItem("viewers", count);
+      document.getElementById("viewerCount").textContent = "Viewers: " + count;
+    }
+
+    // Logout function
+    function logout() {
+      document.getElementById("adminPost").style.display = "none";
+      document.getElementById("loginBox").style.display = "block";
+    }
+
+    // Admin login
+    function login() {
+      const user = document.getElementById("username").value;
+      const pass = document.getElementById("password").value;
+      if (user === "OnesmoP" && pass === "Onesmo2004") {
+        document.getElementById("adminPost").style.display = "block";
+        document.getElementById("loginBox").style.display = "none";
+        renderPosts(); // Re-render posts to show admin actions
+      } else {
+        alert("Wrong credentials!");
+      }
+    }
+
+    // Image preview for new post
+    let uploadedImage = "";
+    document.getElementById("imageInput").addEventListener("change", function (event) {
+      const file = event.target.files[0];
+      const reader = new FileReader();
+      reader.onload = function () {
+        uploadedImage = reader.result;
+        const img = document.getElementById("previewImage");
+        img.src = uploadedImage;
+        img.style.display = "block";
+      };
+      if (file) {
+        reader.readAsDataURL(file);
+      }
+    });
+
+    // Publish post
+    function publishPost() {
+      const content = document.getElementById("postContent").value;
+      const now = new Date().toLocaleString();
+      const newPost = {
+        id: Date.now(),
+        content: content,
+        image: uploadedImage,
+        timestamp: now,
+        comments: [],
+        likes: 0,
+        loves: 0,
+        sads: 0,
+      };
+      posts.unshift(newPost);
+      savePosts();
+      renderPosts();
+      document.getElementById("postContent").value = "";
+      document.getElementById("previewImage").style.display = "none";
+      uploadedImage = "";
+    }
+
+    // Load posts from local storage
+    function loadPosts() {
+      renderPosts();
+    }
+
+    // Render posts
+    function renderPosts() {
+      const postsContainer = document.getElementById("postsContainer");
+      postsContainer.innerHTML = "";
+      posts.forEach(post => {
+        const postDiv = document.createElement("div");
+        postDiv.className = "post";
+        postDiv.dataset.postId = post.id;
+
+        let adminActions = '';
+        const isAdminLoggedIn = document.getElementById("adminPost").style.display === "block";
+        if (isAdminLoggedIn) {
+          adminActions = `
+            <div class="admin-actions">
+              <button class="edit-btn" onclick="editPost(${post.id})">Edit</button>
+              <button class="delete-btn" onclick="deletePost(${post.id})">Delete</button>
+            </div>
+          `;
+        }
+
+        const commentsHtml = post.comments.map(comment => `<p>${comment.text} <span class="comment-time">[${comment.time}]</span></p>`).join('');
+
+        postDiv.innerHTML = `
+          <p>${post.content}</p>
+          ${post.image ? `<img src="${post.image}" alt="Post Image">` : ""}
+          <div class="timestamp">Published on: ${post.timestamp}</div>
+          <button class="download-btn" onclick="downloadPost(this)">Download Post</button>
+          <div class="reactions">
+            <strong>React:</strong>
+            <button onclick="react(this, 'like', ${post.id})">Like (${post.likes || 0})</button>
+            <button onclick="react(this, 'love', ${post.id})">Love (${post.loves || 0})</button>
+            <button onclick="react(this, 'sad', ${post.id})">Sad (${post.sads || 0})</button>
+          </div>
+          <div class="comment-box">
+            <textarea placeholder="Write a comment..."></textarea>
+            <button onclick="addComment(this, ${post.id})">Send Comment</button>
+            <div class="comments">${commentsHtml}</div>
+          </div>
+          ${adminActions}
+        `;
+        postsContainer.appendChild(postDiv);
+      });
+    }
+
+    // Save posts to local storage
+    function savePosts() {
+      localStorage.setItem("posts", JSON.stringify(posts));
+    }
+
+    // Delete post
+    function deletePost(postId) {
+      if (confirm("Are you sure you want to delete this post?")) {
+        posts = posts.filter(post => post.id !== postId);
+        savePosts();
+        renderPosts();
+      }
+    }
+
+    // Edit post
+    function editPost(postId) {
+      currentEditPost = posts.find(post => post.id === postId);
+      if (currentEditPost) {
+        document.getElementById("editPostBox").classList.remove("hidden");
+        document.getElementById("editPostContent").value = currentEditPost.content;
+        document.getElementById("currentPostId").value = postId;
+        document.getElementById("originalImageUrl").value = currentEditPost.image || "";
+        const editPreviewImage = document.getElementById("editPreviewImage");
+        if (currentEditPost.image) {
+          editPreviewImage.src = currentEditPost.image;
+          editPreviewImage.style.display = "block";
+        } else {
+          editPreviewImage.style.display = "none";
+        }
+        document.getElementById("adminPost").style.display = "none";
+        document.getElementById("postsContainer").style.display = "none";
+      }
+    }
+
+    // Image preview for edit post
+    let editUploadedImage = "";
+    document.getElementById("editImageInput").addEventListener("change", function (event) {
+      const file = event.target.files[0];
+      const reader = new FileReader();
+      reader.onload = function () {
+        editUploadedImage = reader.result;
+        const img = document.getElementById("editPreviewImage");
+        img.src = editUploadedImage;
+        img.style.display = "block";
+      };
+      if (file) {
+        reader.readAsDataURL(file);
+      } else {
+        editUploadedImage = "";
+        if (!document.getElementById("originalImageUrl").value) {
+          document.getElementById("editPreviewImage").style.display = "none";
+        } else {
+          document.getElementById("editPreviewImage").src = document.getElementById("originalImageUrl").value;
+          document.getElementById("editPreviewImage").style.display = "block";
+        }
+      }
+    });
+
+    // Save edited post
+    function saveEditedPost() {
+      const postId = parseInt(document.getElementById("currentPostId").value);
+      const editedContent = document.getElementById("editPostContent").value;
+      const originalImageUrl = document.getElementById("originalImageUrl").value;
+      const newImage = editUploadedImage || originalImageUrl;
+      const now = new Date().toLocaleString();
+
+      posts = posts.map(post => {
+        if (post.id === postId) {
+          return { ...post, content: editedContent, image: newImage, timestamp: now };
+        }
+        return post;
+      });
+
+      savePosts();
+      renderPosts();
+      cancelEdit();
+    }
+
+    // Cancel edit
+    function cancelEdit() {
+      document.getElementById("editPostBox").classList.add("hidden");
+      document.getElementById("adminPost").style.display = document.getElementById("loginBox").style.display === "none" ? "block" : "none";
+      document.getElementById("postsContainer").style.display = "block";
+      editUploadedImage = "";
+    }
+
+    // Add comment
+    function addComment(button, postId) {
+      const textarea = button.previousElementSibling;
+      const commentText = textarea.value.trim();
+      if (commentText !== "") {
+        const now = new Date().toLocaleTimeString();
+        posts = posts.map(post => {
+          if (post.id === postId) {
+            return { ...post, comments: [...post.comments, { text: commentText, time: now }] };
+          }
+          return post;
+        });
+        savePosts();
+        renderPosts();
+        textarea.value = "";
+      }
+    }
+
+    // Download post
+    function downloadPost(button) {
+      const postElement = button.parentElement;
+      const postId = parseInt(postElement.dataset.postId);
+      const post = posts.find(p => p.id === postId);
+
+      if (post) {
+        const content = `POST:\n${post.content}\nPublished on: ${post.timestamp}\n\nIMAGE:\n${post.image || "No image"}`;
+        const blob = new Blob([content], { type: "text/plain" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `onesmo_post_${postId}.txt`;
+        a.click();
+        URL.revokeObjectURL(url);
+      }
+    }
+
+    // React to a post
+    function react(button, type, postId) {
+      posts = posts.map(post => {
+        if (post.id === postId) {
+          switch (type) {
+            case 'like':
+              post.likes = (post.likes || 0) + 1;
+              break;
+            case 'love':
+              post.loves = (post.loves || 0) + 1;
+              break;
+            case 'sad':
+              post.sads = (post.sads || 0) + 1;
+              break;
+          }
+          return { ...post };
+        }
+        return post;
+      });
+      savePosts();
+      renderPosts();
+    }
+  </script>
+<script 
+// Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+import { getAnalytics } from "firebase/analytics";
+
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+
+// Your web app's Firebase configuration
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional></script>
+
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyByX8KkqRnkz9_6PMkMHWOK_zBfOGokgWc",
+  authDomain: "onesmus-site.firebaseapp.com",
+  projectId: "onesmus-site",
+  storageBucket: "onesmus-site.firebasestorage.app",
+  messagingSenderId: "354101413054",
+  appId: "1:354101413054:web:2f9af29ece088f5baa0aef",
+  measurementId: "G-TKMQC0L8BR"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
+</script>
+</body>
+</html>
+
