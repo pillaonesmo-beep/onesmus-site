@@ -1,251 +1,237 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>ONESMUS SITE</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<style>
-  body {background-color:#1e3f66;color:white;font-family:Arial,sans-serif;margin:0;padding:0;}
-  header {background-color:#14365b;display:flex;justify-content:space-between;align-items:center;padding:10px 20px;}
-  header img {height:50px;border-radius:10px;}
-  header .menu {display:flex;align-items:center;gap:20px;}
-  header button {padding:8px 15px;background-color:#ff4444;color:white;border:none;border-radius:5px;cursor:pointer;}
-  .container {padding:20px;}
-  h1 {text-align:center;margin-top:10px;}
-  .time,.viewer-count {text-align:right;font-size:0.9em;margin:5px 20px;}
-  .login,.admin-post,.post,.comment-box,.edit-post-box {background-color:#29487d;padding:15px;margin:20px auto;border-radius:10px;width:90%;max-width:700px;box-sizing:border-box;}
-  input,textarea,button {width:100%;padding:10px;margin-top:10px;border:none;border-radius:5px;box-sizing:border-box;}
-  textarea {min-height:80px;}
-  .reactions button {width:auto;margin:5px 5px 5px 0;}
-  .post img,.edit-post-box img {max-width:100%;margin-top:10px;border-radius:10px;}
-  .download-btn,.edit-btn,.delete-btn,.save-edit-btn,.cancel-edit-btn {margin-top:10px;margin-right:5px;padding:8px 12px;border:none;border-radius:5px;cursor:pointer;}
-  .download-btn,.save-edit-btn,.edit-btn {background-color:#4caf50;color:white;}
-  .delete-btn {background-color:#f44336;color:white;}
-  .cancel-edit-btn {background-color:#bbb;color:black;}
-  .comment-box textarea {width:100%;}
-  .comment-box button {background-color:#00aaff;color:white;}
-  .timestamp {font-size:0.8em;color:#ddd;margin-top:5px;}
-  .comment-time {font-size:0.75em;color:#ccc;margin-left:10px;}
-  .admin-actions {margin-top:10px;}
-  .admin-actions button {margin-right:5px;}
-  .edit-post-box textarea {width:100%;min-height:100px;}
-  .edit-post-box input[type="file"] {margin-top:5px;}
-  .hidden {display:none!important;}
-  .spinner {width:40px;height:40px;border:5px solid #ccc;border-top:5px solid #00aaff;border-radius:50%;animation:spin 1s linear infinite;margin:15px auto;}
-  @keyframes spin {100%{transform:rotate(360deg);}}
-  @media(max-width:480px){header{flex-direction:column;gap:5px;}h1{font-size:1.5em;}}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ONESMO SPORTS | Search & Live Feed</title>
+  <style>
+    :root {
+      --primary-red: #e63946;
+      --dark-blue: #14213d;
+      --football-green: #2b9348;
+      --basketball-orange: #fb8500;
+      --tennis-blue: #00b4d8;
+    }
+
+    body { background-color: #f0f2f5; color: #1d3557; font-family: 'Segoe UI', sans-serif; padding: 0; margin: 0; }
+    
+    header { 
+      background-color: var(--dark-blue); padding: 15px 20px; 
+      display: flex; justify-content: space-between; align-items: center;
+      position: sticky; top: 0; z-index: 1000;
+    }
+
+    .logo-text { color: white; font-weight: 800; font-size: 1.4rem; }
+    .logo-text span { color: var(--primary-red); }
+
+    /* Search & Filter Section */
+    .nav-controls {
+      background: white; border-bottom: 1px solid #ddd;
+      position: sticky; top: 60px; z-index: 999;
+    }
+
+    .search-container { padding: 10px 15px 5px 15px; }
+    .search-input {
+      width: 100%; padding: 10px 15px; border-radius: 25px;
+      border: 1px solid #ddd; background: #f1f3f4; font-size: 0.9rem;
+      outline: none; transition: 0.3s;
+    }
+    .search-input:focus { border-color: var(--primary-red); background: white; }
+
+    .filter-bar {
+      padding: 10px; overflow-x: auto;
+      display: flex; gap: 10px; white-space: nowrap;
+    }
+
+    .filter-btn {
+      padding: 6px 15px; border-radius: 20px; border: 1px solid #ddd;
+      background: #f8f9fa; cursor: pointer; font-size: 0.85rem;
+    }
+
+    .filter-btn.active { background: var(--dark-blue); color: white; border-color: var(--dark-blue); }
+
+    .container { padding: 15px; max-width: 700px; margin: auto; }
+
+    /* Cards */
+    .post-card {
+      background: white; border-radius: 12px; margin-bottom: 20px;
+      overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    }
+
+    .cat-tag {
+      font-size: 0.7rem; font-weight: bold; color: white;
+      padding: 3px 8px; border-radius: 4px; text-transform: uppercase;
+    }
+
+    .post-content { padding: 15px; }
+    .post-title { font-size: 1.25rem; font-weight: 800; margin: 8px 0; line-height: 1.2; }
+    .post-img { width: 100%; height: auto; display: block; background: #eee; }
+
+    /* Admin Styling */
+    .admin-card { background: white; padding: 20px; border-radius: 12px; margin-bottom: 20px; border: 2px solid var(--primary-red); }
+    input, textarea, select { width: 100%; padding: 10px; margin-top: 8px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; }
+    .btn-main { background: var(--dark-blue); color: white; padding: 10px 20px; width: 100%; font-weight: bold; border: none; border-radius: 6px; margin-top: 10px; cursor: pointer; }
+
+    .hidden { display: none !important; }
+  </style>
 </head>
 <body>
 
-<header>
-  <img src="logo.jpg" alt="Site Logo">
-  <div class="menu">
-    <span id="viewerCount" class="viewer-count">Viewers: 0</span>
-    <button onclick="logout()">Logout</button>
+  <header>
+    <div class="logo-text">OHP05<span>TIPS</span></div>
+    <button onclick="toggleAdmin()" style="background:transparent; color:white; border:1px solid white; padding:5px 10px; font-size:0.7rem; cursor: pointer; border-radius: 4px;">Admin</button>
+  </header>
+
+  <div class="nav-controls">
+    <div class="search-container">
+      <input type="text" id="searchInput" class="search-input" placeholder="Search teams, players, or matches..." oninput="handleSearch()">
+    </div>
+    <div class="filter-bar">
+      <button class="filter-btn active" onclick="setFilter('All')">All News</button>
+      <button class="filter-btn" onclick="setFilter('Football')">Football</button>
+      <button class="filter-btn" onclick="setFilter('Basketball')">Basketball</button>
+      <button class="filter-btn" onclick="setFilter('Tennis')">Tennis</button>
+    </div>
   </div>
-</header>
 
-<div class="time" id="time"></div>
+  <div class="container">
+    
+    <div id="loginBox" class="admin-card hidden">
+      <h3>Admin Login</h3>
+      <input type="password" id="adminPass" placeholder="Enter Admin Password">
+      <button class="btn-main" onclick="verifyAdmin()">Unlock Admin Tools</button>
+    </div>
 
-<div class="container">
-<h1>ONESMUS SITE</h1>
+    <div id="adminPost" class="admin-card hidden">
+      <h3 style="margin:0; color:var(--primary-red)">Post New Update</h3>
+      <select id="newsCat">
+        <option value="Football">Football</option>
+        <option value="Basketball">Basketball</option>
+        <option value="Tennis">Tennis</option>
+        <option value="Other">Other</option>
+      </select>
+      <input type="text" id="newsTitle" placeholder="Headline">
+      <textarea id="newsContent" rows="3" placeholder="Description..."></textarea>
+      <input type="file" id="imageInput" accept="image/*">
+      <button class="btn-main" id="publishBtn">Publish Live</button>
+    </div>
 
-<div class="login" id="loginBox">
-  <h2>Admin Login</h2>
-  <input type="text" id="username" placeholder="Username">
-  <input type="password" id="password" placeholder="Password">
-  <button onclick="login()">Login</button>
-</div>
-
-<div class="admin-post hidden" id="adminPost">
-  <h2>Post New Update</h2>
-  <textarea id="postContent" placeholder="Write your post here..."></textarea>
-  <input type="file" id="imageInput" accept="image/*">
-  <img id="previewImage" style="display:none; margin-top:10px; max-width:100%;">
-  <button onclick="publishPost()">Publish</button>
-</div>
-
-<div id="loader" class="spinner"></div>
-
-<div id="postsContainer"></div>
-
-<div class="edit-post-box hidden" id="editPostBox">
-  <h2>Edit Post</h2>
-  <textarea id="editPostContent"></textarea>
-  <img id="editPreviewImage" style="display:none; margin-top:10px; max-width:100%;">
-  <input type="file" id="editImageInput" accept="image/*">
-  <div class="edit-actions">
-    <button class="save-edit-btn" onclick="saveEditedPost()">Save</button>
-    <button class="cancel-edit-btn" onclick="cancelEdit()">Cancel</button>
+    <div id="postsContainer">Connecting to live feed...</div>
   </div>
-  <input type="hidden" id="currentPostId">
-</div>
 
-<!-- Firebase -->
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
+    import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, doc, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
 
-<script>
-const firebaseConfig = {
-  apiKey: "AIzaSyByX8KkqRnkz9_6PMkMHWOK_zBfOGokgWc",
-  authDomain: "onesmus-site.firebaseapp.com",
-  projectId: "onesmus-site",
-  storageBucket: "onesmus-site.appspot.com",
-  messagingSenderId: "354101413054",
-  appId: "1:354101413054:web:2f9af29ece088f5baa0aef"
-};
-firebase.initializeApp(firebaseConfig);
-const database = firebase.database();
-const storage = firebase.storage();
+    const firebaseConfig = {
+      apiKey: "AIzaSyByX8KkqRnkz9_6PMkMHWOK_zBfOGokgWc",
+      authDomain: "onesmus-site.firebaseapp.com",
+      projectId: "onesmus-site",
+      storageBucket: "onesmus-site.firebasestorage.app",
+      messagingSenderId: "354101413054",
+      appId: "1:354101413054:web:2f9af29ece088f5baa0aef"
+    };
 
-let uploadedImage = "";
-let editUploadedImage = "";
-let currentEditPost = null;
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    
+    let allPosts = [];
+    let currentFilter = "All";
+    let isAdmin = false;
 
-// Auto-time display
-setInterval(()=>{document.getElementById("time").textContent=new Date().toLocaleString();},1000);
+    // --- Admin Security ---
+    window.toggleAdmin = () => document.getElementById('loginBox').classList.toggle('hidden');
+    window.verifyAdmin = () => {
+      if(document.getElementById('adminPass').value === "Onesmo2004") {
+        isAdmin = true;
+        document.getElementById('loginBox').classList.add('hidden');
+        document.getElementById('adminPost').classList.remove('hidden');
+        renderFeedUI();
+      } else { alert("Access Denied"); }
+    };
 
-// Admin login
-function login(){
-  const user=document.getElementById("username").value;
-  const pass=document.getElementById("password").value;
-  if(user==="OnesmoP" && pass==="Onesmo2004"){
-    document.getElementById("adminPost").classList.remove("hidden");
-    document.getElementById("loginBox").classList.add("hidden");
-  } else {alert("Wrong credentials!");}
-}
-function logout(){
-  document.getElementById("adminPost").classList.add("hidden");
-  document.getElementById("loginBox").classList.remove("hidden");
-}
-
-// Viewer counter
-function getVisitorId(){let id=sessionStorage.getItem("vid");if(!id){id=Date.now()+"_"+Math.random().toString(36);sessionStorage.setItem("vid",id);}return id;}
-function incrementViewers(){
-  const id=getVisitorId();
-  const ref=database.ref("viewers/"+id);
-  ref.once("value",snap=>{if(!snap.exists()){ref.set(true); database.ref("viewerCount").transaction(c=>(c||0)+1);}});
-  database.ref("viewerCount").on("value",s=>{document.getElementById("viewerCount").innerText="Viewers: "+(s.val()||0);});
-}
-
-// Image previews
-document.getElementById("imageInput").addEventListener("change",e=>{
-  const file=e.target.files[0]; if(!file)return;
-  const reader=new FileReader();
-  reader.onload=function(){uploadedImage=reader.result;document.getElementById("previewImage").src=uploadedImage;document.getElementById("previewImage").style.display="block";};
-  reader.readAsDataURL(file);
-});
-document.getElementById("editImageInput").addEventListener("change",e=>{
-  const file=e.target.files[0]; if(!file)return;
-  const reader=new FileReader();
-  reader.onload=function(){editUploadedImage=reader.result;document.getElementById("editPreviewImage").src=editUploadedImage;document.getElementById("editPreviewImage").style.display="block";};
-  reader.readAsDataURL(file);
-});
-
-// Publish post
-function publishPost(){
-  const content=document.getElementById("postContent").value.trim();
-  if(!content){alert("Write something!"); return;}
-  const time=new Date().toLocaleString();
-  const newPostRef=database.ref("posts").push();
-  if(uploadedImage){
-    const sRef=storage.ref("posts/"+Date.now()+"_img");
-    sRef.putString(uploadedImage,'data_url').then(s=>s.ref.getDownloadURL().then(url=>{
-      newPostRef.set({content,image:url,timestamp:time,likes:0,loves:0,sads:0,comments:{}});
-      document.getElementById("postContent").value=""; uploadedImage=""; document.getElementById("previewImage").style.display="none";
-    }));
-  } else {
-    newPostRef.set({content,image:"",timestamp:time,likes:0,loves:0,sads:0,comments:{}});
-    document.getElementById("postContent").value=""; uploadedImage=""; document.getElementById("previewImage").style.display="none";
-  }
-}
-
-// Load posts in real-time
-function loadPosts(){
-  database.ref("posts").limitToLast(50).on("value",snap=>{
-    const container=document.getElementById("postsContainer"); container.innerHTML="";
-    snap.forEach(c=>{
-      const p=c.val(); p.id=c.key;
-      const div=document.createElement("div"); div.className="post"; div.dataset.postId=p.id;
-      const adminActions=document.getElementById("adminPost").classList.contains("hidden")?"":`
-        <div class="admin-actions">
-          <button class="edit-btn" onclick="editPost('${p.id}')">Edit</button>
-          <button class="delete-btn" onclick="deletePost('${p.id}')">Delete</button>
-        </div>`;
-      let commentsHTML=""; if(p.comments){for(let c in p.comments){commentsHTML+=`<p>${p.comments[c].text} <span class="comment-time">[${p.comments[c].time}]</span></p>`;}}
-      div.innerHTML=`
-        <p>${p.content}</p>
-        ${p.image?`<img src="${p.image}">`:''}
-        <div class="timestamp">Published: ${p.timestamp}</div>
-        <div class="reactions">
-          <button onclick="react('${p.id}','likes')">Like (${p.likes||0})</button>
-          <button onclick="react('${p.id}','loves')">Love (${p.loves||0})</button>
-          <button onclick="react('${p.id}','sads')">Sad (${p.sads||0})</button>
-        </div>
-        <div class="comment-box">
-          <textarea placeholder="Write a comment..."></textarea>
-          <button onclick="addComment(this,'${p.id}')">Comment</button>
-          <div class="comments">${commentsHTML}</div>
-        </div>
-        ${adminActions}
-      `;
-      container.prepend(div);
+    // --- Image Helper ---
+    const toBase64 = file => new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result);
     });
-    document.getElementById("loader").style.display="none";
-  });
-}
 
-// Reactions
-function react(postId,type){ database.ref("posts/"+postId+"/"+type).transaction(n=>(n||0)+1); }
+    // --- Publish News ---
+    document.getElementById("publishBtn").onclick = async () => {
+      const title = document.getElementById("newsTitle").value;
+      const content = document.getElementById("newsContent").value;
+      const category = document.getElementById("newsCat").value;
+      const imageFile = document.getElementById("imageInput").files[0];
+      
+      if(!title || !content) return alert("Fill all fields");
+      
+      document.getElementById("publishBtn").innerText = "Publishing...";
+      let img = imageFile ? await toBase64(imageFile) : "";
+      
+      await addDoc(collection(db, "posts"), {
+        title, content, category, image: img,
+        timestamp: Date.now(), likes: 0
+      });
+      
+      document.getElementById("newsTitle").value = "";
+      document.getElementById("newsContent").value = "";
+      document.getElementById("imageInput").value = "";
+      document.getElementById("publishBtn").innerText = "Publish Live";
+    };
 
-// Comments
-function addComment(btn,postId){
-  const text=btn.previousElementSibling.value.trim(); if(!text)return;
-  const time=new Date().toLocaleTimeString();
-  database.ref("posts/"+postId+"/comments").push({text,time});
-  btn.previousElementSibling.value="";
-}
+    // --- Live Data Subscription ---
+    const q = query(collection(db, "posts"), orderBy("timestamp", "desc"));
+    onSnapshot(q, (snapshot) => {
+      allPosts = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      renderFeedUI();
+    });
 
-// Delete post
-function deletePost(postId){ if(confirm("Are you sure?")) database.ref("posts/"+postId).remove(); }
+    // --- Search & Filter Logic ---
+    window.setFilter = (cat) => {
+      currentFilter = cat;
+      document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.innerText === cat || (cat === 'All' && btn.innerText === 'All News'));
+      });
+      renderFeedUI();
+    };
 
-// Edit post
-function editPost(postId){
-  database.ref("posts/"+postId).get().then(snap=>{
-    if(!snap.exists()) return;
-    currentEditPost=snap.val(); currentEditPost.id=postId;
-    document.getElementById("editPostBox").classList.remove("hidden");
-    document.getElementById("editPostContent").value=currentEditPost.content;
-    document.getElementById("currentPostId").value=postId;
-    const img=document.getElementById("editPreviewImage");
-    if(currentEditPost.image){ img.src=currentEditPost.image; img.style.display="block"; } else img.style.display="none";
-    document.getElementById("adminPost").style.display="none"; document.getElementById("postsContainer").style.display="none";
-  });
-}
+    window.handleSearch = () => renderFeedUI();
 
-// Save edited post
-function saveEditedPost(){
-  const postId=document.getElementById("currentPostId").value;
-  const content=document.getElementById("editPostContent").value;
-  const file=editUploadedImage || currentEditPost.image || "";
-  const time=new Date().toLocaleString();
-  database.ref("posts/"+postId).update({content,image:file,timestamp:time});
-  cancelEdit();
-}
+    function renderFeedUI() {
+      const searchTerm = document.getElementById("searchInput").value.toLowerCase();
+      const container = document.getElementById("postsContainer");
+      
+      let filtered = allPosts.filter(post => {
+        const matchesSearch = post.title.toLowerCase().includes(searchTerm) || 
+                              post.category.toLowerCase().includes(searchTerm);
+        const matchesFilter = currentFilter === "All" || post.category === currentFilter;
+        return matchesSearch && matchesFilter;
+      });
 
-// Cancel edit
-function cancelEdit(){
-  document.getElementById("editPostBox").classList.add("hidden");
-  document.getElementById("adminPost").style.display="block"; 
-  document.getElementById("postsContainer").style.display="block"; 
-  editUploadedImage="";
-}
+      container.innerHTML = filtered.length ? "" : `<p style="text-align:center; margin-top:20px; color:#666;">No results found for "${searchTerm}"</p>`;
+      
+      filtered.forEach((post) => {
+        const div = document.createElement("div");
+        div.className = "post-card";
+        div.innerHTML = `
+          ${post.image ? `<img src="${post.image}" class="post-img">` : ""}
+          <div class="post-content">
+            <span class="cat-tag" style="background:${post.category==='Football'?'#2b9348':post.category==='Basketball'?'#fb8500':'#00b4d8'}">${post.category}</span>
+            <h2 class="post-title">${post.title}</h2>
+            <p style="font-size:0.9rem; color:#444">${post.content}</p>
+            <div style="display:flex; justify-content:space-between; margin-top:15px">
+               <button onclick="react('${post.id}', ${post.likes})" style="background:none; color:var(--dark-blue); font-size:0.8rem; font-weight:bold; cursor:pointer">👍 Like (${post.likes || 0})</button>
+               ${isAdmin ? `<button onclick="del('${post.id}')" style="color:red; background:none; font-size:0.8rem; cursor:pointer">Delete</button>` : ""}
+            </div>
+          </div>
+        `;
+        container.appendChild(div);
+      });
+    }
 
-incrementViewers();
-loadPosts();
-</script>
-
+    window.react = (id, count) => updateDoc(doc(db, "posts", id), { likes: count + 1 });
+    window.del = (id) => confirm("Delete news?") && deleteDoc(doc(db, "posts", id));
+  </script>
 </body>
 </html>
