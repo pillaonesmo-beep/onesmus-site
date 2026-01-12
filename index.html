@@ -3,125 +3,114 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>OHP05tips | Search & Live Feed</title>
+  <title>ONESMO SPORTS | Pro</title>
   <style>
     :root {
       --primary-red: #e63946;
-      --dark-blue: #14213d;
-      --football-green: #2b9348;
-      --basketball-orange: #fb8500;
-      --tennis-blue: #00b4d8;
+      --bg-color: #f0f2f5;
+      --card-bg: #ffffff;
+      --text-color: #1d3557;
+      --nav-bg: #14213d;
+      --border-color: #ddd;
     }
 
-    body { background-color: #f0f2f5; color: #1d3557; font-family: 'Segoe UI', sans-serif; padding: 0; margin: 0; }
+    [data-theme="dark"] {
+      --bg-color: #121212;
+      --card-bg: #1e1e1e;
+      --text-color: #e0e0e0;
+      --nav-bg: #000000;
+      --border-color: #333;
+    }
+
+    body { background-color: var(--bg-color); color: var(--text-color); font-family: 'Segoe UI', sans-serif; padding: 0; margin: 0; transition: 0.3s; }
     
-    header { 
-      background-color: var(--dark-blue); padding: 15px 20px; 
-      display: flex; justify-content: space-between; align-items: center;
-      position: sticky; top: 0; z-index: 1000;
-    }
-
-    .logo-text { color: white; font-weight: 800; font-size: 1.4rem; }
+    header { background-color: var(--nav-bg); padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; }
+    .logo-text { color: white; font-weight: 800; font-size: 1.4rem; cursor: pointer; }
     .logo-text span { color: var(--primary-red); }
 
-    /* Search & Filter Section */
-    .nav-controls {
-      background: white; border-bottom: 1px solid #ddd;
-      position: sticky; top: 60px; z-index: 999;
-    }
+    .tab-bar { background: var(--nav-bg); display: flex; justify-content: center; gap: 30px; padding: 10px 0; border-top: 1px solid rgba(255,255,255,0.1); }
+    .tab-item { color: #ccc; cursor: pointer; font-weight: 600; font-size: 0.9rem; padding: 5px 10px; }
+    .tab-item.active { color: white; border-bottom: 2px solid var(--primary-red); }
 
-    .search-container { padding: 10px 15px 5px 15px; }
-    .search-input {
-      width: 100%; padding: 10px 15px; border-radius: 25px;
-      border: 1px solid #ddd; background: #f1f3f4; font-size: 0.9rem;
-      outline: none; transition: 0.3s;
-    }
-    .search-input:focus { border-color: var(--primary-red); background: white; }
-
-    .filter-bar {
-      padding: 10px; overflow-x: auto;
-      display: flex; gap: 10px; white-space: nowrap;
-    }
-
-    .filter-btn {
-      padding: 6px 15px; border-radius: 20px; border: 1px solid #ddd;
-      background: #f8f9fa; cursor: pointer; font-size: 0.85rem;
-    }
-
-    .filter-btn.active { background: var(--dark-blue); color: white; border-color: var(--dark-blue); }
+    .menu-btn { background: none; border: none; color: white; font-size: 1.5rem; cursor: pointer; }
+    .dropdown-menu { position: absolute; right: 20px; top: 50px; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 8px; width: 160px; display: none; box-shadow: 0 4px 15px rgba(0,0,0,0.3); z-index: 1001; }
+    .dropdown-menu button { width: 100%; padding: 12px; background: none; border: none; color: var(--text-color); text-align: left; cursor: pointer; font-size: 0.9rem; }
 
     .container { padding: 15px; max-width: 700px; margin: auto; }
 
-    /* Cards */
-    .post-card {
-      background: white; border-radius: 12px; margin-bottom: 20px;
-      overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-    }
-
-    .cat-tag {
-      font-size: 0.7rem; font-weight: bold; color: white;
-      padding: 3px 8px; border-radius: 4px; text-transform: uppercase;
-    }
-
+    .post-card { background: var(--card-bg); border-radius: 12px; margin-bottom: 20px; overflow: hidden; border: 1px solid var(--border-color); }
+    .post-img { width: 100%; height: auto; display: block; }
     .post-content { padding: 15px; }
-    .post-title { font-size: 1.25rem; font-weight: 800; margin: 8px 0; line-height: 1.2; }
-    .post-img { width: 100%; height: auto; display: block; background: #eee; }
 
-    /* Admin Styling */
-    .admin-card { background: white; padding: 20px; border-radius: 12px; margin-bottom: 20px; border: 2px solid var(--primary-red); }
-    input, textarea, select { width: 100%; padding: 10px; margin-top: 8px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; }
-    .btn-main { background: var(--dark-blue); color: white; padding: 10px 20px; width: 100%; font-weight: bold; border: none; border-radius: 6px; margin-top: 10px; cursor: pointer; }
+    /* Polling UI */
+    .poll-container { background: var(--card-bg); padding: 25px; border-radius: 15px; border: 1px solid var(--border-color); text-align: center; }
+    .poll-option-box { background: var(--bg-color); border: 1px solid var(--border-color); padding: 15px; border-radius: 10px; margin-top: 10px; cursor: pointer; display: flex; justify-content: space-between; }
+    .poll-option-box.voted { border-color: var(--primary-red); opacity: 0.7; cursor: default; }
 
+    .search-input { width: 100%; padding: 12px; border-radius: 25px; border: 1px solid var(--border-color); background: var(--card-bg); color: var(--text-color); margin: 10px 0; outline: none; }
     .hidden { display: none !important; }
+    .btn-red { background: var(--primary-red); color: white; border: none; padding: 10px; border-radius: 6px; cursor: pointer; font-weight: bold; width: 100%; }
   </style>
 </head>
-<body>
+<body data-theme="light">
 
   <header>
-    <div class="logo-text">OHP05<span>TIPS</span></div>
-    <button onclick="toggleAdmin()" style="background:transparent; color:white; border:1px solid white; padding:5px 10px; font-size:0.7rem; cursor: pointer; border-radius: 4px;">Admin</button>
+    <div class="logo-text" onclick="showPage('news')">ONESMO<span>SPORTS</span></div>
+    <div class="options-container">
+      <button class="menu-btn" onclick="toggleDropdown()">⋮</button>
+      <div class="dropdown-menu" id="dropdownMenu">
+        <button onclick="toggleTheme()">🌓 Theme</button>
+        <button onclick="toggleAdmin()">🔑 Admin</button>
+      </div>
+    </div>
   </header>
 
-  <div class="nav-controls">
-    <div class="search-container">
-      <input type="text" id="searchInput" class="search-input" placeholder="Search teams, players, or matches..." oninput="handleSearch()">
-    </div>
-    <div class="filter-bar">
-      <button class="filter-btn active" onclick="setFilter('All')">All News</button>
-      <button class="filter-btn" onclick="setFilter('Football')">Football</button>
-      <button class="filter-btn" onclick="setFilter('Basketball')">Basketball</button>
-      <button class="filter-btn" onclick="setFilter('Tennis')">Tennis</button>
-    </div>
+  <div class="tab-bar">
+    <div class="tab-item active" id="tab-news" onclick="showPage('news')">NEWS</div>
+    <div class="tab-item" id="tab-polls" onclick="showPage('polls')">POLLS</div>
   </div>
 
   <div class="container">
-    
-    <div id="loginBox" class="admin-card hidden">
-      <h3>Admin Login</h3>
-      <input type="password" id="adminPass" placeholder="Enter Admin Password">
-      <button class="btn-main" onclick="verifyAdmin()">Unlock Admin Tools</button>
+    <div id="page-news">
+      <input type="text" id="searchInput" class="search-input" placeholder="Search news..." oninput="handleSearch()">
+      <div id="postsContainer"></div>
     </div>
 
-    <div id="adminPost" class="admin-card hidden">
-      <h3 style="margin:0; color:var(--primary-red)">Post New Update</h3>
-      <select id="newsCat">
-        <option value="Football">Football</option>
-        <option value="Basketball">Basketball</option>
-        <option value="Tennis">Tennis</option>
-        <option value="Other">Other</option>
-      </select>
-      <input type="text" id="newsTitle" placeholder="Headline">
-      <textarea id="newsContent" rows="3" placeholder="Description..."></textarea>
-      <input type="file" id="imageInput" accept="image/*">
-      <button class="btn-main" id="publishBtn">Publish Live</button>
+    <div id="page-polls" class="hidden">
+      <div class="poll-container">
+        <h2 id="pollQuestion">No active poll.</h2>
+        <div id="pollOptions"></div>
+        <div id="adminPollTools" class="hidden" style="margin-top:20px">
+            <button onclick="deleteCurrentPoll()" style="background:red; color:white; border:none; padding:8px; border-radius:5px; cursor:pointer">Delete Current Poll</button>
+        </div>
+      </div>
     </div>
 
-    <div id="postsContainer">Connecting to live feed...</div>
+    <div id="adminPanel" class="hidden" style="background:var(--card-bg); padding:20px; border-radius:12px; margin: 20px 0; border: 2px solid var(--primary-red)">
+      <input type="password" id="adminPass" placeholder="Admin Password">
+      <button onclick="verifyAdmin()" class="btn-red" style="background:var(--nav-bg); margin-top:5px;">Login</button>
+      
+      <div id="adminTools" class="hidden">
+        <hr>
+        <h4>Create News Post</h4>
+        <input type="text" id="newsTitle" placeholder="Headline">
+        <textarea id="newsContent" rows="3" placeholder="Full story..."></textarea>
+        <input type="file" id="imageInput">
+        <button id="publishBtn" class="btn-red">Publish Post</button>
+        <hr>
+        <h4>Create New Poll (3 Options)</h4>
+        <input type="text" id="newPollQ" placeholder="Poll Question">
+        <input type="text" id="pollOpt1" placeholder="Option 1">
+        <input type="text" id="pollOpt2" placeholder="Option 2">
+        <input type="text" id="pollOpt3" placeholder="Option 3">
+        <button onclick="createPoll()" class="btn-red" style="background: green;">Start New Poll</button>
+      </div>
+    </div>
   </div>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
-    import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, doc, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+    import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, doc, deleteDoc, updateDoc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyByX8KkqRnkz9_6PMkMHWOK_zBfOGokgWc",
@@ -134,104 +123,146 @@
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
-    
-    let allPosts = [];
-    let currentFilter = "All";
     let isAdmin = false;
 
-    // --- Admin Security ---
-    window.toggleAdmin = () => document.getElementById('loginBox').classList.toggle('hidden');
+    // --- Time Ago Logic ---
+    function timeAgo(ts) {
+      const sec = Math.floor((new Date() - ts) / 1000);
+      if (sec < 60) return "Just now";
+      if (sec < 3600) return Math.floor(sec/60) + "m ago";
+      if (sec < 86400) return Math.floor(sec/3600) + "h ago";
+      return new Date(ts).toLocaleDateString();
+    }
+
+    // --- Page Logic ---
+    window.showPage = (p) => {
+      document.getElementById("page-news").classList.toggle("hidden", p !== 'news');
+      document.getElementById("page-polls").classList.toggle("hidden", p !== 'polls');
+      document.getElementById("tab-news").classList.toggle("active", p === 'news');
+      document.getElementById("tab-polls").classList.toggle("active", p === 'polls');
+      document.getElementById("dropdownMenu").style.display = "none";
+    };
+
+    window.toggleDropdown = () => {
+      const m = document.getElementById("dropdownMenu");
+      m.style.display = m.style.display === "block" ? "none" : "block";
+    };
+
+    window.toggleTheme = () => {
+      const next = document.body.getAttribute("data-theme") === "dark" ? "light" : "dark";
+      document.body.setAttribute("data-theme", next);
+      localStorage.setItem("theme", next);
+      document.getElementById("dropdownMenu").style.display = "none";
+    };
+
+    window.toggleAdmin = () => {
+      document.getElementById("adminPanel").classList.toggle("hidden");
+      document.getElementById("dropdownMenu").style.display = "none";
+    };
+
     window.verifyAdmin = () => {
-      if(document.getElementById('adminPass').value === "Onesmo2004") {
+      if(document.getElementById("adminPass").value === "Onesmo2004") {
         isAdmin = true;
-        document.getElementById('loginBox').classList.add('hidden');
-        document.getElementById('adminPost').classList.remove('hidden');
-        renderFeedUI();
-      } else { alert("Access Denied"); }
+        document.getElementById("adminTools").classList.remove("hidden");
+        document.getElementById("adminPollTools").classList.remove("hidden");
+        renderNews();
+      }
     };
 
-    // --- Image Helper ---
-    const toBase64 = file => new Promise((resolve) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = () => resolve(reader.result);
+    // --- Polling Logic (3 Options + One Vote Only) ---
+    window.createPoll = async () => {
+      const q = document.getElementById("newPollQ").value;
+      const o1 = document.getElementById("pollOpt1").value;
+      const o2 = document.getElementById("pollOpt2").value;
+      const o3 = document.getElementById("pollOpt3").value;
+      const pollID = Date.now().toString(); // New ID for every poll
+      await setDoc(doc(db, "poll", "current"), { question: q, opt1: o1, opt2: o2, opt3: o3, v1: 0, v2: 0, v3: 0, pollID });
+      alert("New Poll Launched!");
+    };
+
+    window.deleteCurrentPoll = async () => {
+      if(confirm("Delete this poll?")) {
+        await setDoc(doc(db, "poll", "current"), {});
+        alert("Poll deleted");
+      }
+    };
+
+    onSnapshot(doc(db, "poll", "current"), (d) => {
+      const container = document.getElementById("pollOptions");
+      if(!d.exists() || !d.data().question) {
+        document.getElementById("pollQuestion").innerText = "No active poll.";
+        container.innerHTML = "";
+        return;
+      }
+      const data = d.data();
+      document.getElementById("pollQuestion").innerText = data.question;
+      
+      const hasVoted = localStorage.getItem("voted_" + data.pollID);
+
+      container.innerHTML = `
+        <div class="poll-option-box ${hasVoted?'voted':''}" onclick="vote('v1', '${data.pollID}')"><span>${data.opt1}</span> <strong>${data.v1}</strong></div>
+        <div class="poll-option-box ${hasVoted?'voted':''}" onclick="vote('v2', '${data.pollID}')"><span>${data.opt2}</span> <strong>${data.v2}</strong></div>
+        <div class="poll-option-box ${hasVoted?'voted':''}" onclick="vote('v3', '${data.pollID}')"><span>${data.opt3}</span> <strong>${data.v3}</strong></div>
+      `;
     });
 
-    // --- Publish News ---
-    document.getElementById("publishBtn").onclick = async () => {
-      const title = document.getElementById("newsTitle").value;
-      const content = document.getElementById("newsContent").value;
-      const category = document.getElementById("newsCat").value;
-      const imageFile = document.getElementById("imageInput").files[0];
-      
-      if(!title || !content) return alert("Fill all fields");
-      
-      document.getElementById("publishBtn").innerText = "Publishing...";
-      let img = imageFile ? await toBase64(imageFile) : "";
-      
-      await addDoc(collection(db, "posts"), {
-        title, content, category, image: img,
-        timestamp: Date.now(), likes: 0
-      });
-      
-      document.getElementById("newsTitle").value = "";
-      document.getElementById("newsContent").value = "";
-      document.getElementById("imageInput").value = "";
-      document.getElementById("publishBtn").innerText = "Publish Live";
+    window.vote = async (key, pollID) => {
+      if(localStorage.getItem("voted_" + pollID)) return alert("You already voted on this poll!");
+      const pRef = doc(db, "poll", "current");
+      const snap = await getDoc(pRef);
+      await updateDoc(pRef, { [key]: snap.data()[key] + 1 });
+      localStorage.setItem("voted_" + pollID, "true");
     };
 
-    // --- Live Data Subscription ---
-    const q = query(collection(db, "posts"), orderBy("timestamp", "desc"));
-    onSnapshot(q, (snapshot) => {
-      allPosts = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      renderFeedUI();
+    // --- News Logic (Maintaining Previous Features) ---
+    const qNews = query(collection(db, "posts"), orderBy("timestamp", "desc"));
+    let allPosts = [];
+    onSnapshot(qNews, (s) => {
+      allPosts = s.docs.map(d => ({ id: d.id, ...d.data() }));
+      renderNews();
     });
 
-    // --- Search & Filter Logic ---
-    window.setFilter = (cat) => {
-      currentFilter = cat;
-      document.querySelectorAll('.filter-btn').forEach(btn => {
-        btn.classList.toggle('active', btn.innerText === cat || (cat === 'All' && btn.innerText === 'All News'));
-      });
-      renderFeedUI();
-    };
+    window.handleSearch = () => renderNews();
 
-    window.handleSearch = () => renderFeedUI();
-
-    function renderFeedUI() {
-      const searchTerm = document.getElementById("searchInput").value.toLowerCase();
+    function renderNews() {
       const container = document.getElementById("postsContainer");
-      
-      let filtered = allPosts.filter(post => {
-        const matchesSearch = post.title.toLowerCase().includes(searchTerm) || 
-                              post.category.toLowerCase().includes(searchTerm);
-        const matchesFilter = currentFilter === "All" || post.category === currentFilter;
-        return matchesSearch && matchesFilter;
-      });
-
-      container.innerHTML = filtered.length ? "" : `<p style="text-align:center; margin-top:20px; color:#666;">No results found for "${searchTerm}"</p>`;
-      
-      filtered.forEach((post) => {
+      const search = document.getElementById("searchInput").value.toLowerCase();
+      container.innerHTML = "";
+      allPosts.filter(p => p.title.toLowerCase().includes(search)).forEach(post => {
         const div = document.createElement("div");
         div.className = "post-card";
         div.innerHTML = `
           ${post.image ? `<img src="${post.image}" class="post-img">` : ""}
           <div class="post-content">
-            <span class="cat-tag" style="background:${post.category==='Football'?'#2b9348':post.category==='Basketball'?'#fb8500':'#00b4d8'}">${post.category}</span>
-            <h2 class="post-title">${post.title}</h2>
-            <p style="font-size:0.9rem; color:#444">${post.content}</p>
-            <div style="display:flex; justify-content:space-between; margin-top:15px">
-               <button onclick="react('${post.id}', ${post.likes})" style="background:none; color:var(--dark-blue); font-size:0.8rem; font-weight:bold; cursor:pointer">👍 Like (${post.likes || 0})</button>
-               ${isAdmin ? `<button onclick="del('${post.id}')" style="color:red; background:none; font-size:0.8rem; cursor:pointer">Delete</button>` : ""}
-            </div>
+            <div style="font-size:0.75rem; color:#888; margin-bottom:5px;">🕒 ${timeAgo(post.timestamp)}</div>
+            <h2 style="margin:0 0 10px 0">${post.title}</h2>
+            <p>${post.content}</p>
+            ${isAdmin ? `<button onclick="delPost('${post.id}')" style="color:red; background:none; border:none; cursor:pointer; font-weight:bold; margin-top:10px">Delete Post</button>` : ""}
           </div>
         `;
         container.appendChild(div);
       });
     }
 
-    window.react = (id, count) => updateDoc(doc(db, "posts", id), { likes: count + 1 });
-    window.del = (id) => confirm("Delete news?") && deleteDoc(doc(db, "posts", id));
+    document.getElementById("publishBtn").onclick = async () => {
+      const file = document.getElementById("imageInput").files[0];
+      let img = "";
+      if(file) {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        img = await new Promise(res => reader.onload = () => res(reader.result));
+      }
+      await addDoc(collection(db, "posts"), {
+        title: document.getElementById("newsTitle").value,
+        content: document.getElementById("newsContent").value,
+        image: img, timestamp: Date.now()
+      });
+      alert("News Post Published!");
+    };
+
+    window.delPost = (id) => confirm("Delete post?") && deleteDoc(doc(db, "posts", id));
+
+    if(localStorage.getItem("theme") === "dark") document.body.setAttribute("data-theme", "dark");
   </script>
 </body>
 </html>
