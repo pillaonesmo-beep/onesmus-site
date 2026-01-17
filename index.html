@@ -3,147 +3,138 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>OHP05 TIPS| Live Feed</title>
+  <title>OHP05 TIPS| Pro Tips & Live</title>
+  
+  <meta name="theme-color" content="#14213d">
+  <meta name="mobile-web-app-capable" content="yes">
+
   <style>
     :root {
       --primary-red: #e63946;
-      --dark-blue: #14213d;
-      --bg-color: #f0f2f5;
+      --bg-color: #f8fafc;
       --card-bg: #ffffff;
-      --text-main: #1d3557;
-      --text-muted: #444;
-      --border-color: #ddd;
+      --text-color: #0f172a;
+      --nav-bg: #14213d;
+      --accent: #f59e0b;
+      --win: #10b981;
     }
 
-    /* Dark Mode Variables */
-    body.dark-theme {
-      --bg-color: #0b0e14;
-      --card-bg: #1a1d23;
-      --text-main: #f1f3f4;
-      --text-muted: #b0b3b8;
-      --border-color: #333;
+    [data-theme="dark"] {
+      --bg-color: #020617;
+      --card-bg: #1e293b;
+      --text-color: #f1f5f9;
+      --nav-bg: #000000;
     }
 
-    body { background-color: var(--bg-color); color: var(--text-main); font-family: 'Segoe UI', sans-serif; padding: 0; margin: 0; transition: 0.3s; }
+    body { background: var(--bg-color); color: var(--text-color); font-family: 'Inter', sans-serif; margin: 0; padding-bottom: 80px; transition: 0.3s; overflow-x: hidden; }
     
-    header { 
-      background-color: var(--dark-blue); padding: 15px 20px; 
-      display: flex; justify-content: space-between; align-items: center;
-      position: sticky; top: 0; z-index: 1000;
-    }
+    /* Live Ticker */
+    .ticker-wrap { background: #000; color: #00f0ff; padding: 10px 0; overflow: hidden; position: sticky; top: 0; z-index: 1001; font-family: monospace; border-bottom: 2px solid var(--primary-red); }
+    .ticker { display: flex; white-space: nowrap; animation: ticker 40s linear infinite; }
+    @keyframes ticker { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
+    .score-item { margin: 0 30px; font-weight: bold; }
 
-    .logo-text { color: white; font-weight: 800; font-size: 1.4rem; text-decoration: none; }
-    .logo-text span { color: var(--primary-red); }
+    header { background: var(--nav-bg); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; }
+    .logo { color: white; font-weight: 900; font-size: 1.5rem; letter-spacing: -1.5px; }
+    .logo span { color: var(--primary-red); }
 
-    .nav-controls {
-      background: var(--card-bg); border-bottom: 1px solid var(--border-color);
-      position: sticky; top: 60px; z-index: 999;
-    }
+    /* Card Styling */
+    .tip-card { background: var(--card-bg); border-radius: 20px; margin-bottom: 20px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); border: 1px solid rgba(0,0,0,0.05); overflow: hidden; position: relative; }
+    .tip-img { width: 100%; height: 220px; object-fit: cover; }
+    .tip-body { padding: 20px; }
+    
+    .share-btn { position: absolute; right: 15px; bottom: 20px; background: #25D366; color: white; border: none; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; }
 
-    .search-container { padding: 10px 15px 5px 15px; }
-    .search-input {
-      width: 100%; padding: 10px 15px; border-radius: 25px;
-      border: 1px solid var(--border-color); background: var(--bg-color); color: var(--text-main); font-size: 0.9rem;
-      outline: none; transition: 0.3s; box-sizing: border-box;
-    }
+    /* Nav */
+    .bottom-nav { position: fixed; bottom: 0; width: 100%; background: var(--nav-bg); display: flex; justify-content: space-around; padding: 15px 0; z-index: 1000; }
+    .nav-btn { background: none; border: none; color: #94a3b8; font-size: 0.75rem; cursor: pointer; }
+    .nav-btn.active { color: white; font-weight: bold; }
+    .nav-btn i { font-size: 1.5rem; display: block; margin-bottom: 4px; }
 
-    .filter-bar { padding: 10px; overflow-x: auto; display: flex; gap: 10px; }
-    .filter-btn {
-      padding: 6px 15px; border-radius: 20px; border: 1px solid var(--border-color);
-      background: var(--bg-color); color: var(--text-main); cursor: pointer; font-size: 0.85rem; white-space: nowrap;
-    }
-    .filter-btn.active { background: var(--dark-blue); color: white; }
-
-    .container { padding: 15px; max-width: 700px; margin: auto; min-height: 80vh; }
-
-    /* Post Cards */
-    .post-card {
-      background: var(--card-bg); border-radius: 12px; margin-bottom: 20px;
-      overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.05); border: 1px solid var(--border-color);
-    }
-    .post-link { text-decoration: none; color: inherit; display: block; }
-    .post-link:hover .post-title { color: var(--primary-red); }
-
-    .cat-tag { font-size: 0.7rem; font-weight: bold; color: white; padding: 3px 8px; border-radius: 4px; text-transform: uppercase; }
-    .post-content { padding: 15px; }
-    .post-title { font-size: 1.25rem; font-weight: 800; margin: 8px 0; line-height: 1.2; transition: 0.2s; }
-    .post-img { width: 100%; height: auto; display: block; background: #eee; }
-
-    /* Comments Section */
-    .comment-section { border-top: 1px solid var(--border-color); padding: 15px; background: rgba(0,0,0,0.02); }
-    .comment-item { font-size: 0.85rem; padding: 5px 0; border-bottom: 1px dashed var(--border-color); color: var(--text-muted); }
-    .comment-input-group { display: flex; gap: 5px; margin-top: 10px; }
-    .comment-input { flex-grow: 1; padding: 8px; border-radius: 6px; border: 1px solid var(--border-color); background: var(--bg-color); color: var(--text-main); }
-
-    /* Admin UI */
-    .admin-card { background: var(--card-bg); padding: 20px; border-radius: 12px; margin-bottom: 20px; border: 2px solid var(--primary-red); }
-    input, textarea, select { width: 100%; padding: 10px; margin-top: 8px; border: 1px solid var(--border-color); border-radius: 6px; box-sizing: border-box; background: var(--bg-color); color: var(--text-main); }
-    .btn-main { background: var(--dark-blue); color: #42525Awhite; padding: 10px 20px; width: 100%; font-weight: bold; border: none; border-radius: 6px; margin-top: 10px; cursor: pointer; }
-
-    footer { background: var(--dark-blue); color: w#425A50hite; padding: 40px 20px; text-align: center; margin-top: 50px; }
-    .footer-links { margin: 15px 0; display: flex; justify-content: center; gap: 20px; }
-    .footer-links a { color: #AAAAAA; text-decoration: none; font-size: 0.8rem; }
-
+    .container { padding: 15px; max-width: 600px; margin: auto; }
     .hidden { display: none !important; }
+    .btn-red { background: var(--primary-red); color: white; border: none; padding: 14px; border-radius: 12px; font-weight: bold; width: 100%; cursor: pointer; margin-top: 10px; }
+    
+    input, textarea { width: 100%; padding: 12px; margin-bottom: 10px; border-radius: 10px; border: 1px solid #ddd; box-sizing: border-box; background: var(--card-bg); color: var(--text-color); }
+
+    /* Privacy View */
+    #page-privacy { line-height: 1.6; padding: 20px; background: var(--card-bg); border-radius: 20px; }
   </style>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
-<body class="">
+<body>
+
+  <div class="ticker-wrap">
+    <div class="ticker" id="liveTicker">
+      <span class="score-item">WELCOME TO OHP05 TIPS- WIN DAILY!</span>
+      <span class="score-item">ARSNL 1 - 0 CHELSEA (LIVE)</span>
+    </div>
+  </div>
 
   <header>
-    <a href="#" class="logo-text">OHP05<span>TIPS</span></a>
-    <div style="display:flex; gap:10px;">
-      <button onclick="toggleDarkMode()" style="background:transparent; color:white; border:1px solid #555; padding:5px 10px; font-size:0.7rem; cursor: pointer; border-radius: 4px;">🌓 Mode</button>
-      <button onclick="toggleAdmin()" style="background:transparent; color:white; border:1px solid white; padding:5px 10px; font-size:0.7rem; cursor: pointer; border-radius: 4px;">Admin</button>
+    <div class="logo">OHP05<span>TIPS</span></div>
+    <div style="display: flex; gap: 15px; color: white; font-size: 1.3rem;">
+        <i class="fas fa-circle-half-stroke" onclick="toggleTheme()" style="cursor:pointer"></i>
+        <i class="fas fa-unlock-keyhole" onclick="toggleAdmin()" style="cursor:pointer"></i>
     </div>
   </header>
 
-  <div class="nav-controls">
-    <div class="search-container">
-      <input type="text" id="searchInput" class="search-input" placeholder="Search teams or news..." oninput="handleSearch()">
-    </div>
-    <div class="filter-bar">
-      <button class="filter-btn active" onclick="setFilter('All')">All News</button>
-      <button class="filter-btn" onclick="setFilter('Football')">Football</button>
-      <button class="filter-btn" onclick="setFilter('Basketball')">Basketball</button>
-      <button class="filter-btn" onclick="setFilter('Tennis')">Tennis</button>
-    </div>
-  </div>
-
   <div class="container">
-    <div id="loginBox" class="admin-card hidden">
-      <h3>Admin Login</h3>
-      <input type="password" id="adminPass" placeholder="Enter Admin Password">
-      <button class="btn-main" onclick="verifyAdmin()">Unlock</button>
+    <div id="page-tips">
+      <div id="tipsContainer"></div>
     </div>
 
-    <div id="adminPost" class="admin-card hidden">
-      <h3 style="margin:0; color:var(--primary-red)">Post Live Update</h3>
-      <select id="newsCat">
-        <option value="Football">Football</option>
-        <option value="Basketball">Basketball</option>
-        <option value="Tennis">Tennis</option>
-      </select>
-      <input type="text" id="newsTitle" placeholder="Headline">
-      <textarea id="newsContent" rows="2" placeholder="Short summary..."></textarea>
-      <input type="url" id="newsLink" placeholder="Article Link (Optional: https://...)">
-      <input type="file" id="imageInput" accept="image/*">
-      <button class="btn-main" id="publishBtn">Publish Now</button>
+    <div id="page-polls" class="hidden">
+        <div style="background:var(--card-bg); padding:30px; border-radius:20px; text-align:center;">
+            <h2 id="pollQuestion">Poll Loading...</h2>
+            <div id="pollOptions"></div>
+        </div>
     </div>
 
-    <div id="postsContainer">Loading live sports feed...</div>
+    <div id="page-vip" class="hidden">
+        <div style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); color:white; padding:50px 20px; border-radius:25px; text-align:center;">
+            <i class="fas fa-crown" style="font-size:4rem; color:var(--accent); margin-bottom:20px;"></i>
+            <h2>JOIN VIP</h2>
+            <p>Chat with us on WhatsApp for 99% Sure Odds.</p>
+            <button class="btn-red" style="background:var(--accent); color:black;" onclick="window.open('https://wa.me/255XXXXXXXXX')">WHATSAPP ADMIN</button>
+            <br><br>
+            <p onclick="showPage('privacy')" style="color:#64748b; font-size:0.8rem; cursor:pointer; text-decoration: underline;">Privacy Policy</p>
+        </div>
+    </div>
+
+    <div id="page-privacy" class="hidden">
+        <h2 style="color:var(--primary-red)">Privacy Policy</h2>
+        <p><strong>ONESMO SPORTS</strong> collects anonymous poll data to improve your experience. We use Google Firebase for data storage and do not share your information with 3rd parties.</p>
+        <p>By using this app, you agree to our terms of service.</p>
+        <button class="btn-red" onclick="showPage('tips')">Back to App</button>
+    </div>
+
+    <div id="adminPanel" class="hidden" style="background:var(--card-bg); padding:20px; border-radius:20px; margin-top:20px; border:2px solid var(--primary-red)">
+        <h3>Admin Tools</h3>
+        <input type="password" id="adminPass" placeholder="Admin Key">
+        <button onclick="verifyAdmin()" class="btn-red">Login</button>
+        <div id="adminTools" class="hidden">
+            <hr>
+            <input type="text" id="tMatch" placeholder="Match">
+            <input type="text" id="tPred" placeholder="Tip">
+            <input type="text" id="tOdds" placeholder="Odds">
+            <textarea id="tAnal" placeholder="Analysis..."></textarea>
+            <input type="file" id="tImage" accept="image/*">
+            <button onclick="publishTip()" class="btn-red" id="pubBtn" style="background:#10b981">PUBLISH</button>
+        </div>
+    </div>
   </div>
 
-  <footer>
-    <div class="logo-text">OHP05<span>TIPS</span></div>
-    <div class="footer-links">
-      <a href="#">About</a> • <a href="#">Contact</a> • <a href="#">Privacy</a>
-    </div>
-    <p style="font-size: 0.7rem; color: #666;">© 2026 OHP05TIPS. All Rights Reserved.</p>
-  </footer>
+  <nav class="bottom-nav">
+    <button class="nav-btn active" id="tab-tips" onclick="showPage('tips')"><i class="fas fa-fire"></i>TIPS</button>
+    <button class="nav-btn" id="tab-polls" onclick="showPage('polls')"><i class="fas fa-chart-simple"></i>POLLS</button>
+    <button class="nav-btn" id="tab-vip" onclick="showPage('vip')"><i class="fas fa-star"></i>VIP</button>
+  </nav>
 
   <script type="module">
+    // --- FIREBASE SETTINGS ---
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
-    import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, doc, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+    import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, doc, deleteDoc, updateDoc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyByX8KkqRnkz9_6PMkMHWOK_zBfOGokgWc",
@@ -156,132 +147,82 @@
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
-    
-    let allPosts = [];
-    let currentFilter = "All";
     let isAdmin = false;
 
-    // --- Core UI Functions ---
-    window.toggleDarkMode = () => {
-      document.body.classList.toggle('dark-theme');
-      localStorage.setItem('sportMode', document.body.classList.contains('dark-theme'));
+    // --- NAVIGATION LOGIC ---
+    window.showPage = (p) => {
+      ['tips', 'polls', 'vip', 'privacy'].forEach(id => {
+        document.getElementById(`page-${id}`).classList.toggle('hidden', id !== p);
+        const btn = document.getElementById(`tab-${id}`);
+        if(btn) btn.classList.toggle('active', id === p);
+      });
     };
-    if(localStorage.getItem('sportMode') === 'true') document.body.classList.add('dark-theme');
 
-    window.toggleAdmin = () => document.getElementById('loginBox').classList.toggle('hidden');
-    
+    // --- OTHER LOGIC (VOTING, PUBLISHING, THEME) ---
+    window.toggleTheme = () => {
+      const isDark = document.body.getAttribute('data-theme') === 'dark';
+      document.body.setAttribute('data-theme', isDark ? 'light' : 'dark');
+    };
+
+    window.toggleAdmin = () => document.getElementById("adminPanel").classList.toggle("hidden");
     window.verifyAdmin = () => {
-      if(document.getElementById('adminPass').value === "Onesmo2004") {
+      if(document.getElementById("adminPass").value === "Onesmo2004") {
         isAdmin = true;
-        document.getElementById('loginBox').classList.add('hidden');
-        document.getElementById('adminPost').classList.remove('hidden');
-        renderFeedUI();
-      } else { alert("Wrong Password"); }
+        document.getElementById("adminTools").classList.remove("hidden");
+        alert("Success");
+      }
     };
 
-    const toBase64 = file => new Promise((res) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = () => res(reader.result);
+    // --- SHARE TIP ---
+    window.shareTip = (match, pred, odds) => {
+        const text = `🔥 *ONESMO SPORTS TIP* 🔥\n🏆 ${match}\n🎯 ${pred}\n📈 Odds: ${odds}\n\nAngalia zaidi hapa: ${window.location.href}`;
+        window.open(`https://wa.me/?text=${encodeURIComponent(text)}`);
+    };
+
+    // --- FETCH DATA ---
+    onSnapshot(query(collection(db, "predictions"), orderBy("timestamp", "desc")), (snap) => {
+        const container = document.getElementById("tipsContainer");
+        container.innerHTML = "<h3>Recommended Picks</h3>";
+        snap.forEach(docSnap => {
+            const tip = docSnap.data();
+            container.innerHTML += `
+                <div class="tip-card">
+                    ${tip.image ? `<img src="${tip.image}" class="tip-img">` : ""}
+                    <div class="tip-body">
+                        <div class="tip-match">${tip.match}</div>
+                        <div style="font-weight:bold; color:var(--win)">${tip.prediction}</div>
+                        <div class="tip-odds">@${tip.odds}</div>
+                        <p style="font-size:0.85rem; color:#64748b;">${tip.analysis}</p>
+                        ${isAdmin ? `<button onclick="deleteTip('${docSnap.id}')" style="color:red; background:none; border:none;">Delete</button>` : ""}
+                    </div>
+                    <button class="share-btn" onclick="shareTip('${tip.match}', '${tip.prediction}', '${tip.odds}')">
+                        <i class="fab fa-whatsapp"></i>
+                    </button>
+                </div>
+            `;
+        });
     });
 
-    // --- Actions ---
-    document.getElementById("publishBtn").onclick = async () => {
-      const title = document.getElementById("newsTitle").value;
-      const content = document.getElementById("newsContent").value;
-      const link = document.getElementById("newsLink").value;
-      const category = document.getElementById("newsCat").value;
-      const imageFile = document.getElementById("imageInput").files[0];
-      
-      if(!title) return alert("Title required");
-      
-      const btn = document.getElementById("publishBtn");
-      btn.innerText = "Uploading...";
-      let img = imageFile ? await toBase64(imageFile) : "";
-      
-      await addDoc(collection(db, "posts"), {
-        title, content, category, link, image: img,
-        timestamp: Date.now(), likes: 0, comments: []
-      });
-      
-      ["newsTitle", "newsContent", "newsLink", "imageInput"].forEach(id => document.getElementById(id).value = "");
-      btn.innerText = "Publish Now";
+    window.publishTip = async () => {
+        const file = document.getElementById("tImage").files[0];
+        let imageData = "";
+        if(file) {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            imageData = await new Promise(res => reader.onload = () => res(reader.result));
+        }
+        await addDoc(collection(db, "predictions"), {
+            match: document.getElementById("tMatch").value,
+            prediction: document.getElementById("tPred").value,
+            odds: document.getElementById("tOdds").value,
+            analysis: document.getElementById("tAnal").value,
+            image: imageData,
+            timestamp: Date.now()
+        });
+        location.reload();
     };
 
-    window.addComment = async (id) => {
-      const inp = document.getElementById(`cmnt-${id}`);
-      if(!inp.value.trim()) return;
-      const post = allPosts.find(p => p.id === id);
-      const newCmnts = [...(post.comments || []), inp.value.trim()];
-      await updateDoc(doc(db, "posts", id), { comments: newCmnts });
-      inp.value = "";
-    };
-
-    window.react = (id, count) => updateDoc(doc(db, "posts", id), { likes: (count || 0) + 1 });
-    window.del = (id) => confirm("Delete this post?") && deleteDoc(doc(db, "posts", id));
-
-    // --- Feed Logic ---
-    onSnapshot(query(collection(db, "posts"), orderBy("timestamp", "desc")), (snap) => {
-      allPosts = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-      renderFeedUI();
-    });
-
-    window.setFilter = (cat) => {
-      currentFilter = cat;
-      document.querySelectorAll('.filter-btn').forEach(b => b.classList.toggle('active', b.innerText.includes(cat)));
-      renderFeedUI();
-    };
-
-    window.handleSearch = () => renderFeedUI();
-
-    function renderFeedUI() {
-      const search = document.getElementById("searchInput").value.toLowerCase();
-      const container = document.getElementById("postsContainer");
-      
-      const filtered = allPosts.filter(p => {
-        const matchS = p.title.toLowerCase().includes(search);
-        const matchF = currentFilter === "All" || p.category === currentFilter;
-        return matchS && matchF;
-      });
-
-      container.innerHTML = filtered.length ? "" : "<p style='text-align:center; padding:50px;'>No news found.</p>";
-      
-      filtered.forEach(post => {
-        const postCard = document.createElement("div");
-        postCard.className = "post-card";
-        
-        // Link wrapper: if post.link exists, wrap content in <a>
-        const linkOpen = post.link ? `<a href="${post.link}" target="_blank" class="post-link">` : `<div class="post-link">`;
-        const linkClose = post.link ? `</a>` : `</div>`;
-
-        postCard.innerHTML = `
-          ${linkOpen}
-            ${post.image ? `<img src="${post.image}" class="post-img">` : ""}
-            <div class="post-content">
-              <span class="cat-tag" style="background:${post.category==='Football'?'#2b9348':post.category==='Basketball'?'#fb8500':'#00b4d8'}">${post.category}</span>
-              <h2 class="post-title">${post.title}</h2>
-              <p style="font-size:0.9rem; color:var(--text-muted)">${post.content || ""}</p>
-            </div>
-          ${linkClose}
-          
-          <div style="padding:0 15px 15px 15px; display:flex; justify-content:space-between; align-items:center;">
-             <button onclick="react('${post.id}', ${post.likes})" style="background:none; border:none; color:var(--primary-red); font-weight:bold; cursor:pointer">👍 ${post.likes || 0}</button>
-             ${isAdmin ? `<button onclick="del('${post.id}')" style="color:red; background:none; border:none; cursor:pointer; font-size:0.8rem">Delete</button>` : ""}
-          </div>
-
-          <div class="comment-section">
-            <div id="list-${post.id}">
-              ${(post.comments || []).map(c => `<div class="comment-item">${c}</div>`).join('')}
-            </div>
-            <div class="comment-input-group">
-              <input type="text" id="cmnt-${post.id}" class="comment-input" placeholder="Add comment...">
-              <button onclick="addComment('${post.id}')" style="background:var(--dark-blue); color:white; border:none; padding:0 10px; border-radius:4px; cursor:pointer">OK</button>
-            </div>
-          </div>
-        `;
-        container.appendChild(postCard);
-      });
-    }
+    window.deleteTip = (id) => confirm("Delete?") && deleteDoc(doc(db, "predictions", id));
   </script>
 </body>
 </html>
